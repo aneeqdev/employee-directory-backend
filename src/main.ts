@@ -6,6 +6,19 @@ import { AppModule } from "./app.module"
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
+
+  // Enable CORS for Vercel deployment
+  app.enableCors({
+    origin: [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://your-frontend-domain.vercel.app", // Replace with your frontend URL
+      /\.vercel\.app$/,
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+  })
+
   // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
@@ -14,13 +27,6 @@ async function bootstrap() {
       transform: true,
     }),
   )
-
-  // Enable CORS
-  app.enableCors({
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true,
-  })
 
   // API prefix
   app.setGlobalPrefix("api")
@@ -35,6 +41,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup("api/docs", app, document)
 
+
+  // For Vercel, we need to export the app instead of listening
+  if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
+    return app
+  }
+  
   const port = process.env.PORT || 3001
   await app.listen(port)
 
