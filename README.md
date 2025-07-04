@@ -1,173 +1,357 @@
-# Employee Directory Backend
+# Employee Directory API
 
-A comprehensive NestJS backend API for managing employee directory with CRUD operations.
+A comprehensive REST API for managing employee directory built with NestJS, TypeScript, and TypeORM. This API provides full CRUD operations, advanced search capabilities, pagination, and filtering for employee management systems.
 
-## Features
+## 🚀 Features
 
-- 👥 Employee Management (CRUD operations)
-- 📊 Pagination & Filtering
-- 🏥 Health Check Endpoints
-- 📚 Swagger API Documentation
-- 🛡️ Security (Helmet, CORS, Rate Limiting)
-- 🗄️ Database Migrations
+- **Complete Employee Management**: Create, read, update, and delete employee records
+- **Advanced Search & Filtering**: Search by name, email, title with department and location filters
+- **Pagination Support**: Efficient data loading with customizable page sizes
+- **Data Validation**: Comprehensive input validation using class-validator
+- **Database Flexibility**: SQLite for development, PostgreSQL for production
+- **API Documentation**: Interactive Swagger/OpenAPI documentation
+- **Health Monitoring**: Built-in health check endpoints
+- **Error Handling**: Global exception handling with detailed error responses
+- **Logging**: Structured logging with Winston
+- **CORS Support**: Configurable cross-origin resource sharing
+- **Rate Limiting**: Built-in throttling protection
+- **Serverless Ready**: Optimized for Vercel deployment
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - **Framework**: NestJS
-- **Database**: SQLite (local) / PostgreSQL (Neon) (production)
+- **Language**: TypeScript
+- **Database**: SQLite (dev) / PostgreSQL (prod)
 - **ORM**: TypeORM
-
-- **Validation**: class-validator
+- **Validation**: class-validator, class-transformer
 - **Documentation**: Swagger/OpenAPI
-- **Deployment**: Vercel
+- **Logging**: Winston
+- **Deployment**: Vercel (Serverless)
 
-## Quick Start
+## 📋 Prerequisites
 
-### Local Development
+- Node.js (v18 or higher)
+- npm or yarn
+- PostgreSQL (for production)
+
+## 🔧 Installation
 
 1. **Clone the repository**
-   ```bash
+   \`\`\`bash
    git clone <repository-url>
-   cd employee-directory-backend
-   ```
+   cd employee-directory-api
+   \`\`\`
 
 2. **Install dependencies**
-   ```bash
+   \`\`\`bash
    npm install
-   ```
+   \`\`\`
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
+3. **Environment Setup**
+   Create a \`.env\` file in the root directory:
+   \`\`\`env
+   NODE_ENV=development
+   PORT=3001
+   
+   # Production Database (PostgreSQL)
+   DATABASE_URL=postgresql://username:password@host:port/database
+   
+   # CORS Configuration
+   ALLOWED_ORIGINS=http://localhost:3000,https://your-frontend-domain.com
+   
+   # Logging
+   LOG_LEVEL=info
+   LOG_FORMAT=simple
+   \`\`\`
 
-4. **Run database migrations**
-   ```bash
-   npm run migration:run
-   ```
+## 🚀 Running the Application
 
-5. **Seed the database (optional)**
-   ```bash
-   npm run seed
-   ```
+### Development Mode
+\`\`\`bash
+npm run start:dev
+\`\`\`
 
-6. **Start the development server**
-   ```bash
-   npm run start:dev
-   ```
+### Production Mode
+\`\`\`bash
+npm run build
+npm run start:prod
+\`\`\`
 
-The API will be available at `http://localhost:3000`
+The API will be available at:
+- **Local**: http://localhost:3001
+- **API Base**: http://localhost:3001/api/v1
+- **Swagger Docs**: http://localhost:3001/api/v1/docs
 
-## Production Deployment (Vercel)
+## 📚 API Documentation
 
-### Prerequisites
+### Base URL
+- **Development**: \`http://localhost:3001/api/v1\`
+- **Production**: \`https://your-domain.vercel.app/api/v1\`
 
-For production deployment, you need a cloud database. This application is configured to use **Neon PostgreSQL** (cloud PostgreSQL).
+### Authentication
+Currently, the API doesn't require authentication, but it's structured to easily add authentication middleware.
 
-### 1. Set up Neon PostgreSQL Database
+### Endpoints
 
-1. **Create a Neon account** at [neon.tech](https://neon.tech)
+#### Health Check
+- **GET** \`/health\` - Comprehensive health check with database connectivity
+- **GET** \`/health/basic\` - Basic health check without database dependency
+- **GET** \`/health/debug\` - Debug information for troubleshooting
 
-2. **Create a new project** in the Neon dashboard
+#### Employees
 
-3. **Get your database connection string** from the Neon dashboard
+##### Get All Employees
+\`\`\`http
+GET /employees?page=1&limit=10&search=john&department=Engineering&location=NewYork
+\`\`\`
 
-### 2. Deploy to Vercel
+**Query Parameters:**
+- \`page\` (optional): Page number (default: 1)
+- \`limit\` (optional): Items per page (default: 10, max: 100)
+- \`search\` (optional): Search in name, email, or title
+- \`department\` (optional): Filter by department
+- \`location\` (optional): Filter by location
 
-1. **Connect your repository to Vercel**
+**Response:**
+\`\`\`json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@company.com",
+      "phone": "+1234567890",
+      "title": "Software Engineer",
+      "department": "Engineering",
+      "location": "New York",
+      "hireDate": "2024-01-15",
+      "salary": 75000,
+      "avatar": "https://example.com/avatar.jpg",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    }
+  ],
+  "currentPage": 1,
+  "totalPages": 5,
+  "totalItems": 50,
+  "limit": 10
+}
+\`\`\`
 
-2. **Set environment variables in Vercel dashboard:**
-   ```
-   NODE_ENV=production
-   DATABASE_URL=postgres://your-username:your-password@your-host/your-database?sslmode=require
-   ALLOWED_ORIGINS=https://your-frontend-domain.vercel.app
-   ```
+##### Get Employee by ID
+\`\`\`http
+GET /employees/{id}
+\`\`\`
 
-3. **Deploy**
-   ```bash
-   vercel --prod
-   ```
+##### Create Employee
+\`\`\`http
+POST /employees
+Content-Type: application/json
 
-### 3. Run Migrations on Production
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@company.com",
+  "phone": "+1234567890",
+  "title": "Software Engineer",
+  "department": "Engineering",
+  "location": "New York",
+  "hireDate": "2024-01-15",
+  "salary": 75000,
+  "avatar": "https://example.com/avatar.jpg"
+}
+\`\`\`
 
-After deployment, run migrations on your production database:
+##### Update Employee
+\`\`\`http
+PUT /employees/{id}
+Content-Type: application/json
 
-```bash
-# Set environment variables locally
-export DATABASE_URL=postgres://your-username:your-password@your-host/your-database?sslmode=require
+{
+  "title": "Senior Software Engineer",
+  "salary": 85000
+}
+\`\`\`
+
+##### Delete Employee
+\`\`\`http
+DELETE /employees/{id}
+\`\`\`
+
+### Error Responses
+
+The API returns consistent error responses:
+
+\`\`\`json
+{
+  "statusCode": 400,
+  "timestamp": "2024-01-15T10:00:00Z",
+  "path": "/api/v1/employees",
+  "method": "POST",
+  "message": "Validation failed",
+  "error": "Bad Request"
+}
+\`\`\`
+
+## 🗄️ Database
+
+### Development
+Uses SQLite database (\`employees.db\`) for local development.
+
+### Production
+Uses PostgreSQL database via Neon or other PostgreSQL providers.
+
+### Migrations
+\`\`\`bash
+# Generate migration
+npm run migration:generate -- -n MigrationName
 
 # Run migrations
 npm run migration:run
-```
 
+# Revert migration
+npm run migration:revert
+\`\`\`
 
+### Entity Schema
 
-## API Endpoints
+**Employee Entity:**
+- \`id\`: UUID (Primary Key)
+- \`firstName\`: String (50 chars, indexed)
+- \`lastName\`: String (50 chars, indexed)
+- \`email\`: String (100 chars, unique)
+- \`phone\`: String (20 chars)
+- \`title\`: String (100 chars)
+- \`department\`: String (50 chars, indexed)
+- \`location\`: String (100 chars, indexed)
+- \`hireDate\`: Date
+- \`salary\`: Decimal (10,2)
+- \`avatar\`: String (optional)
+- \`createdAt\`: DateTime
+- \`updatedAt\`: DateTime
 
-### Health Check
-- `GET /api/v1/health` - Full health check (includes database)
-- `GET /api/v1/health/basic` - Basic health check (no database required)
+## 🚀 Deployment
 
-### Employees
-- `GET /api/v1/employees` - Get all employees (with pagination)
-- `POST /api/v1/employees` - Create new employee
-- `GET /api/v1/employees/:id` - Get employee by ID
-- `PUT /api/v1/employees/:id` - Update employee
-- `DELETE /api/v1/employees/:id` - Delete employee
+### Vercel Deployment
 
-### Documentation
-- `GET /api/v1/docs` - Swagger API documentation
+1. **Install Vercel CLI**
+   \`\`\`bash
+   npm i -g vercel
+   \`\`\`
 
-## Environment Variables
+2. **Deploy**
+   \`\`\`bash
+   vercel
+   \`\`\`
 
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `NODE_ENV` | Environment (development/production) | No | development |
-| `DATABASE_URL` | PostgreSQL database URL (production) | Yes (prod) | - |
-| `ALLOWED_ORIGINS` | CORS allowed origins | No | localhost:3000 |
+3. **Environment Variables**
+   Set the following environment variables in Vercel dashboard:
+   - \`DATABASE_URL\`: PostgreSQL connection string
+   - \`ALLOWED_ORIGINS\`: Comma-separated list of allowed origins
+   - \`NODE_ENV\`: production
 
-## Database Configuration
+### Manual Deployment
 
-The application automatically detects the environment and configures the database accordingly:
+1. **Build the application**
+   \`\`\`bash
+   npm run build
+   \`\`\`
 
-- **Development**: Uses local SQLite file (`employees.db`)
-- **Production**: Uses Neon PostgreSQL cloud database (requires `DATABASE_URL`)
+2. **Start production server**
+   \`\`\`bash
+   npm run start:prod
+   \`\`\`
 
-## Troubleshooting
+## 🧪 Testing
+
+\`\`\`bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
+\`\`\`
+
+## 📊 Monitoring & Logging
+
+### Health Checks
+- \`/health\` - Full health check including database connectivity
+- \`/health/basic\` - Basic application health
+- \`/health/debug\` - Debug information
+
+### Logging
+- Structured logging with Winston
+- Different log levels (error, warn, info, debug, verbose)
+- Request/response logging
+- Error tracking with stack traces
+
+## 🔒 Security Features
+
+- **Helmet**: Security headers
+- **CORS**: Configurable cross-origin requests
+- **Rate Limiting**: Request throttling
+- **Input Validation**: Comprehensive data validation
+- **SQL Injection Protection**: TypeORM query builder
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (\`git checkout -b feature/amazing-feature\`)
+3. Commit your changes (\`git commit -m 'Add amazing feature'\`)
+4. Push to the branch (\`git push origin feature/amazing-feature\`)
+5. Open a Pull Request
+
+## 📝 API Validation Rules
+
+### Employee Creation/Update
+- **firstName/lastName**: 2-50 characters, required
+- **email**: Valid email format, unique, max 100 characters
+- **phone**: Valid phone number format
+- **title**: Max 100 characters, required
+- **department**: Max 50 characters, required
+- **location**: Max 100 characters, required
+- **hireDate**: Valid date string (YYYY-MM-DD)
+- **salary**: Positive number
+- **avatar**: Optional URL string
+
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Database connection errors in production**
-   - Ensure `DATABASE_URL` is set correctly
-   - Verify the database URL starts with `postgres://`
-   - Check SSL configuration
+1. **Database Connection Failed**
+   - Check DATABASE_URL environment variable
+   - Ensure database server is running
+   - Verify network connectivity
 
-2. **Health check failing**
-   - Use `/api/v1/health/basic` for basic status
-   - Check database connectivity with `/api/v1/health`
+2. **Swagger Not Loading**
+   - Check if running on correct port
+   - Verify \`/api/v1/docs\` endpoint
+   - Check browser console for errors
 
-3. **Migration errors**
+3. **CORS Errors**
+   - Update ALLOWED_ORIGINS environment variable
+   - Check frontend domain configuration
+
+4. **Migration Errors**
    - Ensure database is accessible
-   - Check environment variables are set correctly
+   - Check migration files syntax
+   - Verify TypeORM configuration
 
-### Local Development Issues
+## 📄 License
 
-1. **Port already in use**
-   - Change the port in `main.ts` or kill the existing process
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-2. **Database file not found**
-   - Run migrations: `npm run migration:run`
-   - Check file permissions
+## 🙏 Acknowledgments
 
-## Contributing
+- NestJS team for the amazing framework
+- TypeORM for database abstraction
+- All contributors and maintainers
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+---
 
-## License
-
-This project is licensed under the MIT License.
+**Made with ❤️ using NestJS and TypeScript**
+\`\`\`
