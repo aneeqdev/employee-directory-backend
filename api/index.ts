@@ -61,7 +61,7 @@ async function bootstrap() {
             endpoints: {
               health: "/api/v1/health",
               employees: "/api/v1/employees",
-              swagger: "/api/v1/docs"
+              swagger: "/api/v1/docs-ui"
             },
             timestamp: new Date().toISOString()
           })
