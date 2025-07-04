@@ -11,24 +11,30 @@ export class HealthService {
   ) {}
 
   async check() {
+    const basicHealth = {
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      environment: process.env.NODE_ENV || "development",
+    };
+
     try {
       // Check database connectivity
       await this.employeeRepository.query("SELECT 1")
-
       return {
-        status: "ok",
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
+        ...basicHealth,
         database: "connected",
-        memory: process.memoryUsage(),
       }
     } catch (error) {
       return {
-        status: "error",
-        timestamp: new Date().toISOString(),
-        error: error.message,
+        ...basicHealth,
+        status: "warning", // Changed from "error" to "warning" since app can still function
         database: "disconnected",
+        databaseError: error.message,
       }
     }
   }
+
+
 }

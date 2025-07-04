@@ -3,6 +3,8 @@ import { ValidationPipe, Logger } from "@nestjs/common"
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger"
 import helmet from "helmet"
 import { AppModule } from "../src/app.module"
+import { GlobalExceptionFilter } from "../src/common/filters/global-exception.filter"
+import { LoggingInterceptor } from "../src/common/interceptors/logging.interceptor"
 
 let app: any
 
@@ -20,8 +22,9 @@ async function bootstrap() {
       app.enableCors({
         origin: process.env.ALLOWED_ORIGINS?.split(",") || [
           "http://localhost:3000",
-          "https://your-frontend-domain.vercel.app",
-          /\.vercel\.app$/,
+          "https://client-employee-directory-next.vercel.app",
+          "https://client-employee-dire-git-2c8494-zainnaeem-invozonedevs-projects.vercel.app",
+          "https://client-employee-directory-next-q0tx3oh3j.vercel.app"
         ],
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -39,6 +42,8 @@ async function bootstrap() {
         }),
       )
 
+      app.useGlobalFilters(new GlobalExceptionFilter())
+      app.useGlobalInterceptors(new LoggingInterceptor())
       app.setGlobalPrefix("api/v1")
 
       // Add a root route handler
@@ -52,7 +57,7 @@ async function bootstrap() {
             endpoints: {
               health: "/api/v1/health",
               employees: "/api/v1/employees",
-              swagger: "/api/v1/docs"
+              swagger: "/api/docs"
             },
             timestamp: new Date().toISOString()
           })
@@ -70,7 +75,7 @@ async function bootstrap() {
         .build()
 
       const document = SwaggerModule.createDocument(app, config)
-      SwaggerModule.setup("api/v1/docs", app, document)
+      SwaggerModule.setup("api/docs", app, document)
 
       await app.init()
 

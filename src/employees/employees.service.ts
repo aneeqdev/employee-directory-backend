@@ -6,12 +6,14 @@ import type { UpdateEmployeeDto } from "./dto/update-employee.dto"
 import type { GetEmployeesQueryDto } from "./dto/get-employees-query.dto"
 import { Employee } from "./entities/employee.entity"
 import type { PaginatedResponse } from "./interfaces/paginated-response.interface"
+import { DatabaseService } from "../common/database/database.service"
 
 @Injectable()
 export class EmployeesService {
   constructor(
     @InjectRepository(Employee)
-    private readonly employeeRepository: Repository<Employee>
+    private readonly employeeRepository: Repository<Employee>,
+    private readonly databaseService: DatabaseService
   ) {}
 
   async create(createEmployeeDto: CreateEmployeeDto): Promise<Employee> {
@@ -20,51 +22,11 @@ export class EmployeesService {
   }
 
   async findAll(query: GetEmployeesQueryDto): Promise<PaginatedResponse<Employee>> {
-    const { page = 1, limit = 10, search, department, location } = query
-    const skip = (page - 1) * limit
-
-    const queryBuilder = this.employeeRepository.createQueryBuilder("employee")
-
-    // Search functionality
-    if (search) {
-      queryBuilder.where(
-        "(employee.firstName LIKE :search OR employee.lastName LIKE :search OR employee.email LIKE :search OR employee.title LIKE :search)",
-        { search: `%${search}%` },
-      )
-    }
-
-    // Department filter
-    if (department && department.toLowerCase() !== 'all') {
-      queryBuilder.andWhere("employee.department = :department", { department })
-    }
-
-    // Location filter
-    if (location && location.toLowerCase() !== 'all') {
-      queryBuilder.andWhere("employee.location = :location", { location })
-    }
-
-    // Order by creation date (newest first)
-    queryBuilder.orderBy("employee.createdAt", "DESC")
-
-    // Apply pagination
-    queryBuilder.skip(skip).take(limit)
-
-    const [employees, totalItems] = await queryBuilder.getManyAndCount()
-    const totalPages = Math.ceil(totalItems / limit)
-
-    return {
-      data: employees,
-      currentPage: page,
-      totalPages,
-      totalItems,
-      limit,
-    }
+    return await this.databaseService.getEmployees(query);
   }
 
   async findOne(id: string): Promise<Employee> {
-    const employee = await this.employeeRepository.findOne({
-      where: { id },
-    })
+    const employee = await this.databaseService.getEmployeeById(id);
 
     if (!employee) {
       throw new NotFoundException(`Employee with ID ${id} not found`)
@@ -94,6 +56,6 @@ export class EmployeesService {
   }
 
   async count(): Promise<number> {
-    return await this.employeeRepository.count()
+    return await this.databaseService.countEmployees()
   }
 }

@@ -37,6 +37,8 @@ export class EmployeesController {
     return await this.employeesService.findAll(query)
   }
 
+
+
   @Get(':id')
   @ApiOperation({ summary: 'Get employee by ID' })
   @ApiResponse({ status: 200, description: 'Employee found' })

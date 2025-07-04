@@ -1,356 +1,191 @@
-# Employee Directory Backend API
+# Employee Directory Backend
 
-A production-ready employee directory backend API built with NestJS, featuring comprehensive CRUD operations, authentication, authorization, and modern development practices. Optimized for Vercel deployment.
+A comprehensive NestJS backend API for managing employee directory with authentication, authorization, and CRUD operations.
 
-## 🚀 Features
+## Features
 
-### Core Functionality
-- **Complete CRUD Operations**: Add, view, edit, and delete employees
-- **Advanced Search & Filtering**: Real-time search across multiple fields with pagination
-- **Authentication & Authorization**: JWT-based authentication with role-based access control
-- **User Management**: Admin and user roles with secure password hashing
-- **API Documentation**: Complete Swagger/OpenAPI documentation
+- 🔐 JWT Authentication & Authorization
+- 👥 Employee Management (CRUD operations)
+- 👤 User Management
+- 📊 Pagination & Filtering
+- 🏥 Health Check Endpoints
+- 📚 Swagger API Documentation
+- 🛡️ Security (Helmet, CORS, Rate Limiting)
+- 🗄️ Database Migrations
+- 🌱 Database Seeding
 
-### Security Features
-- **JWT Authentication**: Secure token-based authentication
-- **Role-Based Access Control**: Admin and user permissions
-- **Password Hashing**: Bcrypt for secure password storage
-- **Input Validation**: Comprehensive DTO validation
-- **CORS Protection**: Configurable cross-origin resource sharing
-- **SQL Injection Protection**: TypeORM with parameterized queries
+## Tech Stack
 
-### Development & Production Features
-- **Production-Grade Logging**: Winston with structured logging and log rotation
-- **Database Migrations**: TypeORM migrations for schema management
-- **Environment Configuration**: Comprehensive environment variable management
-- **Vercel Deployment**: Optimized for serverless deployment
-- **CI/CD Pipeline**: GitHub Actions for automated testing
-- **Comprehensive Testing**: Unit, integration, and e2e tests
+- **Framework**: NestJS
+- **Database**: SQLite (local) / PostgreSQL (Neon) (production)
+- **ORM**: TypeORM
+- **Authentication**: JWT with Passport
+- **Validation**: class-validator
+- **Documentation**: Swagger/OpenAPI
+- **Deployment**: Vercel
 
-## 🛠 Tech Stack
+## Quick Start
 
-### Backend
-- **NestJS** - Progressive Node.js framework
-- **TypeScript** - Type-safe development
-- **TypeORM** - Object-relational mapping
-- **SQLite** - Lightweight database (PostgreSQL for production)
-- **JWT** - JSON Web Tokens for authentication
-- **Winston** - Production logging
-- **Swagger** - API documentation
-- **Jest** - Testing framework
+### Local Development
 
-### Deployment
-- **Vercel** - Serverless deployment platform
-- **GitHub Actions** - CI/CD pipeline
-- **Environment Management** - Configurable deployment
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd employee-directory-backend
+   ```
 
-## 📋 Prerequisites
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- Node.js 18+
-- npm or yarn
-- Git
-- Vercel CLI (for deployment)
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
 
-## 🚀 Quick Start
+4. **Run database migrations**
+   ```bash
+   npm run migration:run
+   ```
 
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd employee-directory-backend
-```
+5. **Seed the database (optional)**
+   ```bash
+   npm run seed
+   ```
 
-### 2. Install Dependencies
-```bash
-npm install
-```
+6. **Start the development server**
+   ```bash
+   npm run start:dev
+   ```
 
-### 3. Environment Setup
-Copy the environment template and configure your variables:
-```bash
-cp env.example .env
-```
+The API will be available at `http://localhost:3000`
 
-Edit `.env` with your configuration:
-```env
-# Database Configuration
-DATABASE_URL=sqlite://employees.db
-NODE_ENV=development
+## Production Deployment (Vercel)
 
-# Server Configuration
-PORT=3001
+### Prerequisites
 
-# JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-here
-JWT_EXPIRES_IN=24h
+For production deployment, you need a cloud database. This application is configured to use **Neon PostgreSQL** (cloud PostgreSQL).
 
-# CORS Configuration
-ALLOWED_ORIGINS=http://localhost:3000,https://your-frontend-domain.vercel.app
+### 1. Set up Neon PostgreSQL Database
 
-# Logging Configuration
-LOG_LEVEL=info
-LOG_FORMAT=json
-```
+1. **Create a Neon account** at [neon.tech](https://neon.tech)
 
-### 4. Database Setup
-Run migrations to set up the database schema:
-```bash
-npm run migration:run
-```
+2. **Create a new project** in the Neon dashboard
 
-Seed the database with sample data:
-```bash
-npm run seed
-```
-
-### 5. Run the Development Server
-```bash
-npm run start:dev
-```
-
-Open [http://localhost:3001](http://localhost:3001) to access the API.
-
-### 6. Access API Documentation
-Visit [http://localhost:3001/api/v1/docs](http://localhost:3001/api/v1/docs) for interactive Swagger documentation.
-
-## 🏗 Project Structure
-
-```
-employee-directory-backend/
-├── src/
-│   ├── auth/                    # Authentication & authorization
-│   │   ├── guards/             # JWT and role guards
-│   │   ├── decorators/         # Custom decorators
-│   │   ├── dto/                # Auth DTOs
-│   │   ├── auth.controller.ts  # Auth endpoints
-│   │   ├── auth.service.ts     # Auth business logic
-│   │   ├── jwt.strategy.ts     # JWT strategy
-│   │   └── auth.module.ts      # Auth module
-│   ├── users/                  # User management
-│   │   ├── entities/           # User entity
-│   │   ├── dto/                # User DTOs
-│   │   ├── users.controller.ts # User endpoints
-│   │   ├── users.service.ts    # User business logic
-│   │   └── users.module.ts     # User module
-│   ├── employees/              # Employee management
-│   │   ├── entities/           # Employee entity
-│   │   ├── dto/                # Employee DTOs
-│   │   ├── interfaces/         # Response interfaces
-│   │   ├── employees.controller.ts # Employee endpoints
-│   │   ├── employees.service.ts    # Employee business logic
-│   │   └── employees.module.ts     # Employee module
-│   ├── health/                 # Health checks
-│   ├── common/                 # Shared utilities
-│   │   └── logger/             # Winston logger service
-│   ├── config/                 # Configuration files
-│   │   └── typeorm.config.ts   # Database configuration
-│   ├── migrations/             # Database migrations
-│   ├── app.module.ts           # Root module
-│   └── main.ts                 # Application entry point
-├── test/                       # Test files
-│   ├── employees/              # Employee tests
-│   └── app.e2e-spec.ts         # E2E tests
-├── logs/                       # Application logs
-├── .github/workflows/          # CI/CD pipeline
-└── README.md                   # Project documentation
-```
-
-## 🔧 API Endpoints
-
-### Authentication
-- `POST /api/v1/auth/login` - User login
-
-### Users (Admin Only)
-- `POST /api/v1/users` - Create new user
-- `GET /api/v1/users` - Get all users (Admin only)
-
-### Employees
-- `GET /api/v1/employees` - List employees with search, filtering, and pagination
-- `POST /api/v1/employees` - Create new employee (Admin only)
-- `GET /api/v1/employees/:id` - Get specific employee
-- `PUT /api/v1/employees/:id` - Update employee (Admin only)
-- `DELETE /api/v1/employees/:id` - Delete employee (Admin only)
-
-### Health
-- `GET /api/v1/health` - Health check endpoint
-
-## 🔐 Authentication
-
-### Login
-```bash
-curl -X POST http://localhost:3001/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@example.com",
-    "password": "password123"
-  }'
-```
-
-### Using JWT Token
-```bash
-curl -X GET http://localhost:3001/api/v1/employees \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-```
-
-## 🧪 Testing
-
-### Run All Tests
-```bash
-npm test
-```
-
-### Run Tests in Watch Mode
-```bash
-npm run test:watch
-```
-
-### Run Tests with Coverage
-```bash
-npm run test:cov
-```
-
-### Run E2E Tests
-```bash
-npm run test:e2e
-```
-
-## 🩺 Health/Readiness/Liveness Probes
-
-The health endpoint at `/api/v1/health` returns HTTP 200 if the service is healthy and HTTP 503 if unhealthy (e.g., database is down). This endpoint is suitable for use as a readiness/liveness probe in Vercel or any orchestrator.
-
-## 📈 Vercel Deployment
-
-### 1. Install Vercel CLI
-```bash
-npm i -g vercel
-```
+3. **Get your database connection string** from the Neon dashboard
 
 ### 2. Deploy to Vercel
+
+1. **Connect your repository to Vercel**
+
+2. **Set environment variables in Vercel dashboard:**
+   ```
+   NODE_ENV=production
+   DATABASE_URL=postgres://your-username:your-password@your-host/your-database?sslmode=require
+   JWT_SECRET=your-jwt-secret
+   ALLOWED_ORIGINS=https://your-frontend-domain.vercel.app
+   ```
+
+3. **Deploy**
+   ```bash
+   vercel --prod
+   ```
+
+### 3. Run Migrations on Production
+
+After deployment, run migrations on your production database:
+
 ```bash
-vercel
-```
-
-### 3. Environment Variables in Vercel
-Set the following environment variables in your Vercel dashboard:
-
-```env
-NODE_ENV=production
-DATABASE_URL=your-production-database-url
-JWT_SECRET=your-super-secure-production-jwt-secret
-JWT_EXPIRES_IN=24h
-LOG_LEVEL=warn
-LOG_FORMAT=json
-ALLOWED_ORIGINS=https://your-production-domain.com
-VERCEL=true
-```
-
-### 4. Custom Build Command
-Vercel will automatically use the `vercel-build` script from package.json:
-```json
-"vercel-build": "npm run build && npm run seed:prod"
-```
-
-### 5. Production Database
-For production, consider using:
-- **Vercel Postgres** - Managed PostgreSQL database
-- **Neon** - Serverless PostgreSQL
-- **Supabase** - Open source Firebase alternative
-
-## 📊 Database Schema
-
-### Users Table
-```sql
-CREATE TABLE users (
-  id VARCHAR PRIMARY KEY,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  firstName VARCHAR(50) NOT NULL,
-  lastName VARCHAR(50) NOT NULL,
-  role VARCHAR DEFAULT 'user',
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### Employees Table
-```sql
-CREATE TABLE employees (
-  id VARCHAR PRIMARY KEY,
-  firstName VARCHAR(50) NOT NULL,
-  lastName VARCHAR(50) NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  phone VARCHAR(20) NOT NULL,
-  title VARCHAR(100) NOT NULL,
-  department VARCHAR(50) NOT NULL,
-  location VARCHAR(100) NOT NULL,
-  hireDate DATE NOT NULL,
-  salary DECIMAL(10, 2) NOT NULL,
-  avatar VARCHAR,
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-## 🔧 Development
-
-### Code Quality
-```bash
-# Lint code
-npm run lint
-
-# Format code
-npm run format
-```
-
-### Database Operations
-```bash
-# Seed database
-npm run seed
-
-# Generate migration
-npm run migration:generate -- src/migrations/MigrationName
+# Set environment variables locally
+export DATABASE_URL=postgres://your-username:your-password@your-host/your-database?sslmode=require
 
 # Run migrations
 npm run migration:run
 ```
 
-## 🛡️ Security Features
+### 4. Migrate Data from SQLite to PostgreSQL (if needed)
 
-- **JWT Authentication**: Secure token-based authentication
-- **Role-Based Access Control**: Admin and user permissions
-- **Password Hashing**: Bcrypt with salt rounds
-- **Input Validation**: Comprehensive DTO validation with class-validator
-- **SQL Injection Protection**: TypeORM with parameterized queries
-- **CORS Protection**: Configurable cross-origin resource sharing
-- **Environment Variable Protection**: Secure configuration management
+If you have existing data in your local SQLite database, you can migrate it to PostgreSQL:
 
-## 📈 Monitoring & Logging
+```bash
+# Set the production DATABASE_URL
+export DATABASE_URL=postgres://your-username:your-password@your-host/your-database?sslmode=require
 
-- **Structured Logging**: Winston with JSON format in production
-- **Log Rotation**: Daily log files with compression
-- **Health Checks**: Health check endpoint for monitoring
-- **Error Tracking**: Comprehensive error handling and logging
+# Run the migration script
+npm run migrate:sqlite-to-postgres
+```
 
-## 🤝 Contributing
+## API Endpoints
+
+### Health Check
+- `GET /api/v1/health` - Full health check (includes database)
+- `GET /api/v1/health/basic` - Basic health check (no database required)
+
+### Authentication
+- `POST /api/v1/auth/login` - User login
+
+### Employees
+- `GET /api/v1/employees` - Get all employees (with pagination)
+- `POST /api/v1/employees` - Create new employee
+- `GET /api/v1/employees/:id` - Get employee by ID
+- `PUT /api/v1/employees/:id` - Update employee
+- `DELETE /api/v1/employees/:id` - Delete employee
+
+### Documentation
+- `GET /api/v1/docs` - Swagger API documentation
+
+## Environment Variables
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `NODE_ENV` | Environment (development/production) | No | development |
+| `DATABASE_URL` | PostgreSQL database URL (production) | Yes (prod) | - |
+| `JWT_SECRET` | JWT signing secret | Yes | - |
+| `ALLOWED_ORIGINS` | CORS allowed origins | No | localhost:3000 |
+
+## Database Configuration
+
+The application automatically detects the environment and configures the database accordingly:
+
+- **Development**: Uses local SQLite file (`employees.db`)
+- **Production**: Uses Neon PostgreSQL cloud database (requires `DATABASE_URL`)
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Database connection errors in production**
+   - Ensure `DATABASE_URL` is set correctly
+   - Verify the database URL starts with `postgres://`
+   - Check SSL configuration
+
+2. **Health check failing**
+   - Use `/api/v1/health/basic` for basic status
+   - Check database connectivity with `/api/v1/health`
+
+3. **Migration errors**
+   - Ensure database is accessible
+   - Check environment variables are set correctly
+
+### Local Development Issues
+
+1. **Port already in use**
+   - Change the port in `main.ts` or kill the existing process
+
+2. **Database file not found**
+   - Run migrations: `npm run migration:run`
+   - Check file permissions
+
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-For support, email support@example.com or create an issue in the repository.
-
----
-
-**Note**: This is a production-ready backend API optimized for Vercel deployment. Make sure to:
-- Change default JWT secrets in production
-- Use a production-grade database (PostgreSQL recommended)
-- Configure proper CORS origins
-- Set up monitoring and alerting
-- Implement rate limiting for production use
+This project is licensed under the MIT License.

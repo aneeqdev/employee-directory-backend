@@ -3,6 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm"
 import { ConfigModule, ConfigService } from "@nestjs/config"
 import { EmployeesModule } from "./employees/employees.module"
 import { HealthModule } from "./health/health.module"
+import { BasicHealthModule } from "./health/basic-health.module"
 import { AuthModule } from "./auth/auth.module"
 import { UsersModule } from "./users/users.module"
 import { Employee } from "./employees/entities/employee.entity"
@@ -31,6 +32,7 @@ import { ThrottlerModule } from '@nestjs/throttler'
     }),
     EmployeesModule,
     HealthModule,
+    BasicHealthModule,
     AuthModule,
     UsersModule,
   ],
