@@ -10,6 +10,18 @@ import { GetEmployeesQueryDto } from "./dto/get-employees-query.dto"
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
+  @Get("cors-test")
+  @ApiOperation({ summary: "Test CORS configuration" })
+  @ApiResponse({ status: 200, description: "CORS test successful" })
+  async corsTest() {
+    return {
+      message: "CORS is working!",
+      timestamp: new Date().toISOString(),
+      origin: "https://employee-directory-frontend-two.vercel.app",
+      cors: "enabled"
+    }
+  }
+
   @Get("test")
   @ApiOperation({ summary: "Test endpoint for CORS debugging" })
   @ApiResponse({ status: 200, description: "Test successful" })

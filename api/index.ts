@@ -17,12 +17,21 @@ async function bootstrap() {
         logger: ["error", "warn", "log", "debug", "verbose"],
       })
 
-      // Simple CORS configuration
-      app.enableCors({
-        origin: "https://employee-directory-frontend-two.vercel.app",
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+      // Disable helmet for CORS
+      // app.use(helmet())
+
+      // Add CORS middleware before everything else
+      app.use((req: any, res: any, next: any) => {
+        res.header('Access-Control-Allow-Origin', 'https://employee-directory-frontend-two.vercel.app')
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+        res.header('Access-Control-Allow-Credentials', 'true')
+        
+        if (req.method === 'OPTIONS') {
+          res.sendStatus(204)
+          return
+        }
+        next()
       })
 
       app.useGlobalPipes(
@@ -85,12 +94,14 @@ async function bootstrap() {
 }
 
 export default async function handler(req: any, res: any) {
+  // Set CORS headers for all requests
+  res.setHeader('Access-Control-Allow-Origin', 'https://employee-directory-frontend-two.vercel.app')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+
   // Handle OPTIONS requests (preflight)
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', 'https://employee-directory-frontend-two.vercel.app')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
     res.status(204).end()
     return
   }
