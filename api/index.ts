@@ -17,35 +17,31 @@ async function bootstrap() {
         logger: ["error", "warn", "log", "debug", "verbose"],
       })
 
-      app.use(helmet())
+      // Temporarily disable helmet for CORS debugging
+      // app.use(helmet())
 
-      // Updated CORS configuration for your frontend domains
-      const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "https://employee-directory-frontend-two.vercel.app",
-        "https://employee-directory-frontend-git-master-aneeq-ahmads-projects.vercel.app",
-        "https://employee-directory-frontend-17t9apev6-aneeq-ahmads-projects.vercel.app",
-      ]
-
+      // Aggressive CORS configuration - allow all origins temporarily
       app.enableCors({
-        origin: function (origin, callback) {
-          // Allow requests with no origin (like mobile apps or curl requests)
-          if (!origin) return callback(null, true)
-          
-          // Check if origin is in allowed list or contains vercel.app
-          if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
-            return callback(null, true)
-          }
-          
-          console.log('CORS blocked origin:', origin)
-          return callback(null, true) // Temporarily allow all origins for debugging
-        },
+        origin: true, // Allow all origins
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Origin", "Accept"],
+        exposedHeaders: ["Content-Length", "Content-Type"],
         preflightContinue: false,
         optionsSuccessStatus: 204
+      })
+
+      // Add CORS middleware manually for additional debugging
+      app.use((req: any, res: any, next: any) => {
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Origin, Accept')
+        
+        if (req.method === 'OPTIONS') {
+          res.sendStatus(204)
+        } else {
+          next()
+        }
       })
 
       app.useGlobalPipes(
@@ -71,6 +67,7 @@ async function bootstrap() {
             version: "1.0.0",
             status: "running",
             environment: process.env.NODE_ENV || "development",
+            cors: "enabled",
             endpoints: {
               health: "/api/v1/health",
               employees: "/api/v1/employees",
@@ -97,6 +94,7 @@ async function bootstrap() {
 
       logger.log(`🚀 Application is ready for serverless deployment`)
       logger.log(`🔧 Environment: ${process.env.NODE_ENV || "development"}`)
+      logger.log(`🌐 CORS: Enabled for all origins`)
     } catch (error) {
       logger.error("Failed to start application:", error)
       throw error
@@ -107,6 +105,17 @@ async function bootstrap() {
 
 export default async function handler(req: any, res: any) {
   try {
+    // Add CORS headers at the handler level
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Origin, Accept')
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      res.status(204).end()
+      return
+    }
+
     const app = await bootstrap()
     const expressInstance = app.getHttpAdapter().getInstance()
     return expressInstance(req, res)
