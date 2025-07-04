@@ -4,9 +4,14 @@ import { EmployeesService } from "./employees/employees.service"
 import fetch from 'node-fetch';
 
 async function fetchRandomUsers(count: number) {
-  const response = await fetch(`https://randomuser.me/api/?results=${count}&nat=us,gb,ca,au`);
-  const data = await response.json();
-  return data.results;
+  try {
+    const response = await fetch(`https://randomuser.me/api/?results=${count}&nat=us,gb,ca,au`);
+    const data = await response.json() as { results: any[] };
+    return data.results;
+  } catch (error) {
+    console.error("Error fetching random users:", error);
+    return [];
+  }
 }
 
 const departments = [
@@ -67,6 +72,12 @@ async function seed() {
 
     // Fetch random users
     const randomUsers = await fetchRandomUsers(50)
+    if (randomUsers.length === 0) {
+      console.log("⚠️ Could not fetch random users. Skipping seed.")
+      await app.close()
+      return
+    }
+
     const employees = randomUsers.map(mapRandomUserToEmployee)
 
     // Create employees
@@ -79,7 +90,10 @@ async function seed() {
     await app.close()
   } catch (error) {
     console.error("❌ Error seeding database:", error)
-    process.exit(1)
+    // Don't exit process in serverless environment
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1)
+    }
   }
 }
 
