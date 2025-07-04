@@ -8,12 +8,31 @@
   ],
   "routes": [
     {
-      "src": "/api/v1/test",
-      "dest": "/api/test"
+      "src": "/api/v1/(.*)",
+      "dest": "/api/index.ts"
     },
     {
       "src": "/(.*)",
-      "dest": "/api"
+      "dest": "/api/index.ts"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With"
+        }
+      ]
     }
   ],
   "env": {

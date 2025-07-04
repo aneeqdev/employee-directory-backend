@@ -16,13 +16,27 @@ async function bootstrap() {
     "https://employee-directory-frontend-two.vercel.app",
     "https://employee-directory-frontend-git-master-aneeq-ahmads-projects.vercel.app",
     "https://employee-directory-frontend-17t9apev6-aneeq-ahmads-projects.vercel.app",
-    /\.vercel\.app$/,
   ]
 
+  // More permissive CORS for development and debugging
   app.enableCors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true)
+      
+      // Check if origin is in allowed list
+      if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
+        return callback(null, true)
+      }
+      
+      console.log('CORS blocked origin:', origin)
+      return callback(null, true) // Temporarily allow all origins for debugging
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   })
 
   // Global validation pipe

@@ -10,6 +10,18 @@ import { GetEmployeesQueryDto } from "./dto/get-employees-query.dto"
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
+  @Get("test")
+  @ApiOperation({ summary: "Test endpoint for CORS debugging" })
+  @ApiResponse({ status: 200, description: "Test successful" })
+  async test() {
+    return {
+      message: "CORS test successful",
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || "development",
+      cors: "enabled"
+    }
+  }
+
   @Post()
   @ApiOperation({ summary: "Create a new employee" })
   @ApiResponse({ status: 201, description: "Employee created successfully" })
@@ -36,8 +48,6 @@ export class EmployeesController {
   async findAll(@Query() query: GetEmployeesQueryDto) {
     return await this.employeesService.findAll(query)
   }
-
-
 
   @Get(':id')
   @ApiOperation({ summary: 'Get employee by ID' })

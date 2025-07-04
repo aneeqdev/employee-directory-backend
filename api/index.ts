@@ -19,16 +19,33 @@ async function bootstrap() {
 
       app.use(helmet())
 
+      // Updated CORS configuration for your frontend domains
+      const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://employee-directory-frontend-two.vercel.app",
+        "https://employee-directory-frontend-git-master-aneeq-ahmads-projects.vercel.app",
+        "https://employee-directory-frontend-17t9apev6-aneeq-ahmads-projects.vercel.app",
+      ]
+
       app.enableCors({
-        origin: process.env.ALLOWED_ORIGINS?.split(",") || [
-          "http://localhost:3000",
-          "https://client-employee-directory-next.vercel.app",
-          "https://client-employee-dire-git-2c8494-zainnaeem-invozonedevs-projects.vercel.app",
-          "https://client-employee-directory-next-q0tx3oh3j.vercel.app"
-        ],
+        origin: function (origin, callback) {
+          // Allow requests with no origin (like mobile apps or curl requests)
+          if (!origin) return callback(null, true)
+          
+          // Check if origin is in allowed list or contains vercel.app
+          if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
+            return callback(null, true)
+          }
+          
+          console.log('CORS blocked origin:', origin)
+          return callback(null, true) // Temporarily allow all origins for debugging
+        },
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+        preflightContinue: false,
+        optionsSuccessStatus: 204
       })
 
       app.useGlobalPipes(
