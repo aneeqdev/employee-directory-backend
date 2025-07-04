@@ -29,8 +29,8 @@ async function createNestServer(expressInstance: express.Express) {
     credentials: true,
   })
 
-  // Set global prefix
-  app.setGlobalPrefix("api")
+  // Set global prefix to match main.ts
+  app.setGlobalPrefix("api/v1")
 
   return app.init()
 }
