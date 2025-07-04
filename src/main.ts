@@ -13,7 +13,9 @@ async function bootstrap() {
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://your-frontend-domain.vercel.app", // Replace with your frontend URL
+    "https://employee-directory-frontend-two.vercel.app",
+    "https://employee-directory-frontend-git-master-aneeq-ahmads-projects.vercel.app",
+    "https://employee-directory-frontend-17t9apev6-aneeq-ahmads-projects.vercel.app",
     /\.vercel\.app$/,
   ]
 
