@@ -47,28 +47,8 @@ async function bootstrap() {
 
       app.useGlobalFilters(new GlobalExceptionFilter())
       app.useGlobalInterceptors(new LoggingInterceptor())
-      app.setGlobalPrefix("api/v1")
 
-      // Add a root route handler
-      app.use("/", (req: any, res: any, next: any) => {
-        if (req.path === "/" && req.method === "GET") {
-          return res.json({
-            message: "Employee Directory API",
-            version: "1.0.0",
-            status: "running",
-            environment: process.env.NODE_ENV || "development",
-            cors: "enabled",
-            endpoints: {
-              health: "/api/v1/health",
-              employees: "/api/v1/employees",
-              swagger: "/api/v1/docs-ui"
-            },
-            timestamp: new Date().toISOString()
-          })
-        }
-        next()
-      })
-
+      // Create Swagger document first
       const config = new DocumentBuilder()
         .setTitle("Employee Directory API")
         .setDescription("A comprehensive API for managing employee directory")
@@ -79,13 +59,17 @@ async function bootstrap() {
 
       const document = SwaggerModule.createDocument(app, config)
       
-      // Serve Swagger JSON
+      // Set global prefix after creating Swagger document
+      app.setGlobalPrefix("api/v1")
+
+      // Add Swagger routes before other routes
       app.use('/api/v1/docs', (req: any, res: any) => {
+        console.log('Serving Swagger JSON at:', req.path)
         res.json(document)
       })
 
-      // Serve Swagger UI HTML
       app.use('/api/v1/docs-ui', (req: any, res: any) => {
+        console.log('Serving Swagger UI at:', req.path)
         const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -125,6 +109,26 @@ async function bootstrap() {
 </html>`
         res.setHeader('Content-Type', 'text/html')
         res.send(html)
+      })
+
+      // Add a root route handler
+      app.use("/", (req: any, res: any, next: any) => {
+        if (req.path === "/" && req.method === "GET") {
+          return res.json({
+            message: "Employee Directory API",
+            version: "1.0.0",
+            status: "running",
+            environment: process.env.NODE_ENV || "development",
+            cors: "enabled",
+            endpoints: {
+              health: "/api/v1/health",
+              employees: "/api/v1/employees",
+              swagger: "/api/v1/docs-ui"
+            },
+            timestamp: new Date().toISOString()
+          })
+        }
+        next()
       })
 
       await app.init()
