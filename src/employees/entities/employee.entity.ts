@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from "typeorm"
 import { ApiProperty } from "@nestjs/swagger"
 
 @Entity("employees")
@@ -7,11 +7,11 @@ export class Employee {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
-  @ApiProperty({ description: "First name of the employee" })
+  @Index()
   @Column({ length: 50 })
   firstName: string
 
-  @ApiProperty({ description: "Last name of the employee" })
+  @Index()
   @Column({ length: 50 })
   lastName: string
 
@@ -27,11 +27,11 @@ export class Employee {
   @Column({ length: 100 })
   title: string
 
-  @ApiProperty({ description: "Department of the employee" })
+  @Index()
   @Column({ length: 50 })
   department: string
 
-  @ApiProperty({ description: "Location of the employee" })
+  @Index()
   @Column({ length: 100 })
   location: string
 

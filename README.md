@@ -1,276 +1,356 @@
-# Employee Directory - Full-Stack Application
+# Employee Directory Backend API
 
-A modern, production-ready employee directory application built with Next.js, featuring comprehensive CRUD operations, advanced search and filtering, pagination, and smooth animations.
+A production-ready employee directory backend API built with NestJS, featuring comprehensive CRUD operations, authentication, authorization, and modern development practices. Optimized for Vercel deployment.
 
 ## 🚀 Features
 
 ### Core Functionality
 - **Complete CRUD Operations**: Add, view, edit, and delete employees
-- **Advanced Search**: Real-time search across names, emails, and job titles
-- **Smart Filtering**: Filter by department, location, and employment status
-- **Pagination**: Efficient data loading with customizable page sizes
-- **Form Validation**: Robust client-side validation using Yup schemas
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **Advanced Search & Filtering**: Real-time search across multiple fields with pagination
+- **Authentication & Authorization**: JWT-based authentication with role-based access control
+- **User Management**: Admin and user roles with secure password hashing
+- **API Documentation**: Complete Swagger/OpenAPI documentation
 
-### User Experience
-- **Smooth Animations**: Framer Motion powered transitions and micro-interactions
-- **Loading States**: Skeleton loaders and loading indicators
-- **Toast Notifications**: User feedback for all actions
-- **Modal Forms**: Intuitive overlay forms for data entry
-- **Real-time Stats**: Dashboard with live employee statistics
+### Security Features
+- **JWT Authentication**: Secure token-based authentication
+- **Role-Based Access Control**: Admin and user permissions
+- **Password Hashing**: Bcrypt for secure password storage
+- **Input Validation**: Comprehensive DTO validation
+- **CORS Protection**: Configurable cross-origin resource sharing
+- **SQL Injection Protection**: TypeORM with parameterized queries
 
-### Technical Features
-- **Type Safety**: Full TypeScript implementation
-- **Database Integration**: PostgreSQL with Neon serverless
-- **API Routes**: RESTful API endpoints with proper error handling
-- **Production Ready**: Optimized build and deployment configuration
+### Development & Production Features
+- **Production-Grade Logging**: Winston with structured logging and log rotation
+- **Database Migrations**: TypeORM migrations for schema management
+- **Environment Configuration**: Comprehensive environment variable management
+- **Vercel Deployment**: Optimized for serverless deployment
+- **CI/CD Pipeline**: GitHub Actions for automated testing
+- **Comprehensive Testing**: Unit, integration, and e2e tests
 
 ## 🛠 Tech Stack
 
-### Frontend
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first styling
-- **shadcn/ui** - Modern component library
-- **Framer Motion** - Animation library
-- **React Hook Form** - Form management
-- **Yup** - Schema validation
-
 ### Backend
-- **Next.js API Routes** - Serverless API endpoints
-- **Neon PostgreSQL** - Serverless PostgreSQL database
-- **SQL** - Direct database queries for optimal performance
+- **NestJS** - Progressive Node.js framework
+- **TypeScript** - Type-safe development
+- **TypeORM** - Object-relational mapping
+- **SQLite** - Lightweight database (PostgreSQL for production)
+- **JWT** - JSON Web Tokens for authentication
+- **Winston** - Production logging
+- **Swagger** - API documentation
+- **Jest** - Testing framework
+
+### Deployment
+- **Vercel** - Serverless deployment platform
+- **GitHub Actions** - CI/CD pipeline
+- **Environment Management** - Configurable deployment
 
 ## 📋 Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
-- Neon database account (or any PostgreSQL database)
+- Git
+- Vercel CLI (for deployment)
 
-## 🚀 Setup Instructions
+## 🚀 Quick Start
 
 ### 1. Clone the Repository
-\`\`\`bash
+```bash
 git clone <repository-url>
-cd employee-directory
-\`\`\`
+cd employee-directory-backend
+```
 
 ### 2. Install Dependencies
-\`\`\`bash
+```bash
 npm install
-# or
-yarn install
-\`\`\`
+```
 
 ### 3. Environment Setup
-Create a `.env.local` file in the root directory:
+Copy the environment template and configure your variables:
+```bash
+cp env.example .env
+```
 
-\`\`\`env
-DATABASE_URL=your_neon_database_connection_string
-\`\`\`
+Edit `.env` with your configuration:
+```env
+# Database Configuration
+DATABASE_URL=sqlite://employees.db
+NODE_ENV=development
 
-To get your Neon database URL:
-1. Sign up at [neon.tech](https://neon.tech)
-2. Create a new project
-3. Copy the connection string from your dashboard
+# Server Configuration
+PORT=3001
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-here
+JWT_EXPIRES_IN=24h
+
+# CORS Configuration
+ALLOWED_ORIGINS=http://localhost:3000,https://your-frontend-domain.vercel.app
+
+# Logging Configuration
+LOG_LEVEL=info
+LOG_FORMAT=json
+```
 
 ### 4. Database Setup
-The application includes SQL scripts to set up your database schema and sample data.
+Run migrations to set up the database schema:
+```bash
+npm run migration:run
+```
 
-Run the setup script in your Neon SQL Editor or any PostgreSQL client:
-\`\`\`sql
--- The setup script is located in scripts/setup-database.sql
--- It will create the necessary tables and insert sample data
-\`\`\`
+Seed the database with sample data:
+```bash
+npm run seed
+```
 
 ### 5. Run the Development Server
-\`\`\`bash
-npm run dev
-# or
-yarn dev
-\`\`\`
+```bash
+npm run start:dev
+```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3001](http://localhost:3001) to access the API.
 
-### 6. Build for Production
-\`\`\`bash
-npm run build
-npm start
-# or
-yarn build
-yarn start
-\`\`\`
+### 6. Access API Documentation
+Visit [http://localhost:3001/api/v1/docs](http://localhost:3001/api/v1/docs) for interactive Swagger documentation.
 
 ## 🏗 Project Structure
 
-\`\`\`
-employee-directory/
-├── app/
-│   ├── api/
-│   │   ├── employees/
-│   │   │   ├── route.ts          # Employee CRUD endpoints
-│   │   │   └── [id]/route.ts     # Individual employee operations
-│   │   └── departments/
-│   │       └── route.ts          # Department data endpoint
-│   ├── globals.css               # Global styles
-│   ├── layout.tsx               # Root layout
-│   └── page.tsx                 # Main application page
-├── components/
-│   ├── ui/                      # shadcn/ui components
-│   ├── employee-card.tsx        # Employee display card
-│   ├── employee-form.tsx        # Add/edit employee form
-│   ├── search-filters.tsx       # Search and filter controls
-│   └── pagination.tsx           # Pagination component
-├── lib/
-│   ├── database.ts              # Database connection and types
-│   └── validations.ts           # Yup validation schemas
-├── scripts/
-│   └── setup-database.sql       # Database schema and seed data
-└── README.md                    # Project documentation
-\`\`\`
+```
+employee-directory-backend/
+├── src/
+│   ├── auth/                    # Authentication & authorization
+│   │   ├── guards/             # JWT and role guards
+│   │   ├── decorators/         # Custom decorators
+│   │   ├── dto/                # Auth DTOs
+│   │   ├── auth.controller.ts  # Auth endpoints
+│   │   ├── auth.service.ts     # Auth business logic
+│   │   ├── jwt.strategy.ts     # JWT strategy
+│   │   └── auth.module.ts      # Auth module
+│   ├── users/                  # User management
+│   │   ├── entities/           # User entity
+│   │   ├── dto/                # User DTOs
+│   │   ├── users.controller.ts # User endpoints
+│   │   ├── users.service.ts    # User business logic
+│   │   └── users.module.ts     # User module
+│   ├── employees/              # Employee management
+│   │   ├── entities/           # Employee entity
+│   │   ├── dto/                # Employee DTOs
+│   │   ├── interfaces/         # Response interfaces
+│   │   ├── employees.controller.ts # Employee endpoints
+│   │   ├── employees.service.ts    # Employee business logic
+│   │   └── employees.module.ts     # Employee module
+│   ├── health/                 # Health checks
+│   ├── common/                 # Shared utilities
+│   │   └── logger/             # Winston logger service
+│   ├── config/                 # Configuration files
+│   │   └── typeorm.config.ts   # Database configuration
+│   ├── migrations/             # Database migrations
+│   ├── app.module.ts           # Root module
+│   └── main.ts                 # Application entry point
+├── test/                       # Test files
+│   ├── employees/              # Employee tests
+│   └── app.e2e-spec.ts         # E2E tests
+├── logs/                       # Application logs
+├── .github/workflows/          # CI/CD pipeline
+└── README.md                   # Project documentation
+```
 
 ## 🔧 API Endpoints
 
+### Authentication
+- `POST /api/v1/auth/login` - User login
+
+### Users (Admin Only)
+- `POST /api/v1/users` - Create new user
+- `GET /api/v1/users` - Get all users (Admin only)
+
 ### Employees
-- `GET /api/employees` - List employees with search, filtering, and pagination
-- `POST /api/employees` - Create new employee
-- `GET /api/employees/[id]` - Get specific employee
-- `PUT /api/employees/[id]` - Update employee
-- `DELETE /api/employees/[id]` - Delete employee
+- `GET /api/v1/employees` - List employees with search, filtering, and pagination
+- `POST /api/v1/employees` - Create new employee (Admin only)
+- `GET /api/v1/employees/:id` - Get specific employee
+- `PUT /api/v1/employees/:id` - Update employee (Admin only)
+- `DELETE /api/v1/employees/:id` - Delete employee (Admin only)
 
-### Departments
-- `GET /api/departments` - List all departments
+### Health
+- `GET /api/v1/health` - Health check endpoint
 
-## 📊 Database Schema
+## 🔐 Authentication
 
-### Employees Table
-\`\`\`sql
-CREATE TABLE employees (
-  id SERIAL PRIMARY KEY,
-  first_name VARCHAR(100) NOT NULL,
-  last_name VARCHAR(100) NOT NULL,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  phone VARCHAR(20),
-  department VARCHAR(100) NOT NULL,
-  title VARCHAR(150) NOT NULL,
-  location VARCHAR(100) NOT NULL,
-  hire_date DATE NOT NULL,
-  salary DECIMAL(10, 2),
-  status VARCHAR(20) DEFAULT 'active',
-  avatar_url TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-\`\`\`
+### Login
+```bash
+curl -X POST http://localhost:3001/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@example.com",
+    "password": "password123"
+  }'
+```
 
-### Departments Table
-\`\`\`sql
-CREATE TABLE departments (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) UNIQUE NOT NULL,
-  description TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-\`\`\`
-
-## 🎨 Key Features Explained
-
-### Form Validation
-The application uses Yup for comprehensive form validation:
-- Required field validation
-- Email format validation
-- Phone number format validation
-- Date validation (hire date cannot be in future)
-- Salary range validation
-- String length limits
-
-### Search & Filtering
-- **Real-time search**: Debounced search across multiple fields
-- **Department filtering**: Filter by specific departments
-- **Location filtering**: Filter by office locations
-- **Status filtering**: Filter by active/inactive employees
-- **Combined filters**: Multiple filters work together
-
-### Pagination
-- Configurable page sizes (5, 10, 20, 50)
-- Smart pagination controls with ellipsis
-- Total count and range display
-- URL state preservation
-
-### Animations
-- Page transitions with Framer Motion
-- Card hover effects
-- Form modal animations
-- Loading skeleton animations
-- Smooth list updates
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add your `DATABASE_URL` environment variable
-4. Deploy automatically
-
-### Other Platforms
-The application can be deployed to any platform that supports Next.js:
-- Netlify
-- Railway
-- DigitalOcean App Platform
-- AWS Amplify
-
-## 🔒 Security Features
-
-- Input validation on both client and server
-- SQL injection prevention through parameterized queries
-- XSS protection through proper data sanitization
-- CORS handling
-- Environment variable protection
+### Using JWT Token
+```bash
+curl -X GET http://localhost:3001/api/v1/employees \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
 
 ## 🧪 Testing
 
-The application is built with testing in mind:
-- TypeScript for compile-time error checking
-- Proper error boundaries
-- Comprehensive error handling
-- Input validation
+### Run All Tests
+```bash
+npm test
+```
 
-## 📈 Performance Optimizations
+### Run Tests in Watch Mode
+```bash
+npm run test:watch
+```
 
-- Server-side pagination to handle large datasets
-- Debounced search to reduce API calls
-- Optimized database queries
-- Image optimization with Next.js
-- Code splitting and lazy loading
-- Efficient re-renders with React keys
+### Run Tests with Coverage
+```bash
+npm run test:cov
+```
+
+### Run E2E Tests
+```bash
+npm run test:e2e
+```
+
+## 🩺 Health/Readiness/Liveness Probes
+
+The health endpoint at `/api/v1/health` returns HTTP 200 if the service is healthy and HTTP 503 if unhealthy (e.g., database is down). This endpoint is suitable for use as a readiness/liveness probe in Vercel or any orchestrator.
+
+## 📈 Vercel Deployment
+
+### 1. Install Vercel CLI
+```bash
+npm i -g vercel
+```
+
+### 2. Deploy to Vercel
+```bash
+vercel
+```
+
+### 3. Environment Variables in Vercel
+Set the following environment variables in your Vercel dashboard:
+
+```env
+NODE_ENV=production
+DATABASE_URL=your-production-database-url
+JWT_SECRET=your-super-secure-production-jwt-secret
+JWT_EXPIRES_IN=24h
+LOG_LEVEL=warn
+LOG_FORMAT=json
+ALLOWED_ORIGINS=https://your-production-domain.com
+VERCEL=true
+```
+
+### 4. Custom Build Command
+Vercel will automatically use the `vercel-build` script from package.json:
+```json
+"vercel-build": "npm run build && npm run seed:prod"
+```
+
+### 5. Production Database
+For production, consider using:
+- **Vercel Postgres** - Managed PostgreSQL database
+- **Neon** - Serverless PostgreSQL
+- **Supabase** - Open source Firebase alternative
+
+## 📊 Database Schema
+
+### Users Table
+```sql
+CREATE TABLE users (
+  id VARCHAR PRIMARY KEY,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  firstName VARCHAR(50) NOT NULL,
+  lastName VARCHAR(50) NOT NULL,
+  role VARCHAR DEFAULT 'user',
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Employees Table
+```sql
+CREATE TABLE employees (
+  id VARCHAR PRIMARY KEY,
+  firstName VARCHAR(50) NOT NULL,
+  lastName VARCHAR(50) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  department VARCHAR(50) NOT NULL,
+  location VARCHAR(100) NOT NULL,
+  hireDate DATE NOT NULL,
+  salary DECIMAL(10, 2) NOT NULL,
+  avatar VARCHAR,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## 🔧 Development
+
+### Code Quality
+```bash
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+```
+
+### Database Operations
+```bash
+# Seed database
+npm run seed
+
+# Generate migration
+npm run migration:generate -- src/migrations/MigrationName
+
+# Run migrations
+npm run migration:run
+```
+
+## 🛡️ Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Role-Based Access Control**: Admin and user permissions
+- **Password Hashing**: Bcrypt with salt rounds
+- **Input Validation**: Comprehensive DTO validation with class-validator
+- **SQL Injection Protection**: TypeORM with parameterized queries
+- **CORS Protection**: Configurable cross-origin resource sharing
+- **Environment Variable Protection**: Secure configuration management
+
+## 📈 Monitoring & Logging
+
+- **Structured Logging**: Winston with JSON format in production
+- **Log Rotation**: Daily log files with compression
+- **Health Checks**: Health check endpoint for monitoring
+- **Error Tracking**: Comprehensive error handling and logging
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
-If you encounter any issues:
-1. Check the console for error messages
-2. Verify your database connection
-3. Ensure all environment variables are set
-4. Check the GitHub issues page
+For support, email support@example.com or create an issue in the repository.
 
-## 🔮 Future Enhancements
+---
 
-- Employee photo upload
-- Advanced reporting and analytics
-- Role-based access control
-- Email notifications
-- Export functionality (CSV, PDF)
-- Employee onboarding workflow
-- Performance reviews integration
-- Organizational chart view
+**Note**: This is a production-ready backend API optimized for Vercel deployment. Make sure to:
+- Change default JWT secrets in production
+- Use a production-grade database (PostgreSQL recommended)
+- Configure proper CORS origins
+- Set up monitoring and alerting
+- Implement rate limiting for production use

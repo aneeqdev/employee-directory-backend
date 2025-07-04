@@ -2,19 +2,23 @@ import { NestFactory } from "@nestjs/core"
 import { ValidationPipe } from "@nestjs/common"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import { AppModule } from "./app.module"
+import { LoggerService } from "./common/logger/logger.service"
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
-
+  const app = await NestFactory.create(AppModule, {
+    logger: new LoggerService(),
+  })
 
   // Enable CORS for Vercel deployment
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://your-frontend-domain.vercel.app", // Replace with your frontend URL
+    /\.vercel\.app$/,
+  ]
+
   app.enableCors({
-    origin: [
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
-      "https://your-frontend-domain.vercel.app", // Replace with your frontend URL
-      /\.vercel\.app$/,
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
@@ -29,18 +33,18 @@ async function bootstrap() {
   )
 
   // API prefix
-  app.setGlobalPrefix("api")
+  app.setGlobalPrefix("api/v1")
 
   // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle("Employee Directory API")
-    .setDescription("API for managing employee directory")
+    .setDescription("API for managing employee directory with authentication")
     .setVersion("1.0")
+    .addBearerAuth()
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup("api/docs", app, document)
-
+  SwaggerModule.setup("api/v1/docs", app, document)
 
   // For Vercel, we need to export the app instead of listening
   if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
@@ -50,8 +54,10 @@ async function bootstrap() {
   const port = process.env.PORT || 3001
   await app.listen(port)
 
-  console.log(`🚀 Application is running on: http://localhost:${port}`)
-  console.log(`📚 Swagger docs available at: http://localhost:${port}/api/docs`)
+  // Use the logger directly since it's already configured
+  const logger = new LoggerService()
+  logger.log(`🚀 Application is running on: http://localhost:${port}`, 'Bootstrap')
+  logger.log(`📚 Swagger docs available at: http://localhost:${port}/api/v1/docs`, 'Bootstrap')
 }
 
 bootstrap()

@@ -34,12 +34,12 @@ export class EmployeesService {
     }
 
     // Department filter
-    if (department) {
+    if (department && department.toLowerCase() !== 'all') {
       queryBuilder.andWhere("employee.department = :department", { department })
     }
 
     // Location filter
-    if (location) {
+    if (location && location.toLowerCase() !== 'all') {
       queryBuilder.andWhere("employee.location = :location", { location })
     }
 
