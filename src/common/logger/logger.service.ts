@@ -1,6 +1,5 @@
 import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
 import * as winston from 'winston';
-import * as DailyRotateFile from 'winston-daily-rotate-file';
 
 @Injectable()
 export class LoggerService implements NestLoggerService {
@@ -25,21 +24,27 @@ export class LoggerService implements NestLoggerService {
       }),
     ];
 
-    // Add file transport for production
-    if (process.env.NODE_ENV === 'production') {
-      transports.push(
-        new DailyRotateFile({
-          filename: 'logs/application-%DATE%.log',
-          datePattern: 'YYYY-MM-DD',
-          zippedArchive: true,
-          maxSize: '20m',
-          maxFiles: '14d',
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.json()
-          ),
-        })
-      );
+    // Only add file transport for non-serverless environments
+    if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
+      try {
+        const DailyRotateFile = require('winston-daily-rotate-file');
+        transports.push(
+          new DailyRotateFile({
+            filename: 'logs/application-%DATE%.log',
+            datePattern: 'YYYY-MM-DD',
+            zippedArchive: true,
+            maxSize: '20m',
+            maxFiles: '14d',
+            format: winston.format.combine(
+              winston.format.timestamp(),
+              winston.format.json()
+            ),
+          })
+        );
+      } catch (error) {
+        // If DailyRotateFile is not available, just use console logging only
+        console.warn('DailyRotateFile not available, using console logging only');
+      }
     }
 
     this.logger = winston.createLogger({
