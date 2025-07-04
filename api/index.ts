@@ -68,6 +68,50 @@ async function bootstrap() {
         res.json(document)
       })
 
+      // Traditional /api/docs endpoint (most commonly used)
+      app.use('/api/docs', (req: any, res: any) => {
+        console.log('Serving traditional Swagger UI at:', req.path)
+        const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Directory API Documentation</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css" />
+    <style>
+        html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+        *, *:before, *:after { box-sizing: inherit; }
+        body { margin:0; background: #fafafa; }
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: '/api/v1/docs',
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout"
+            });
+        };
+    </script>
+</body>
+</html>`
+        res.setHeader('Content-Type', 'text/html')
+        res.send(html)
+      })
+
       app.use('/api/v1/docs-ui', (req: any, res: any) => {
         console.log('Serving Swagger UI at:', req.path)
         const html = `
@@ -77,7 +121,7 @@ async function bootstrap() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Directory API Documentation</title>
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui.css" />
     <style>
         html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
         *, *:before, *:after { box-sizing: inherit; }
@@ -86,8 +130,8 @@ async function bootstrap() {
 </head>
 <body>
     <div id="swagger-ui"></div>
-    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
-    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
     <script>
         window.onload = function() {
             const ui = SwaggerUIBundle({
@@ -123,7 +167,7 @@ async function bootstrap() {
             endpoints: {
               health: "/api/v1/health",
               employees: "/api/v1/employees",
-              swagger: "/api/v1/docs-ui"
+              swagger: "/api/docs"
             },
             timestamp: new Date().toISOString()
           })
@@ -136,7 +180,7 @@ async function bootstrap() {
       logger.log(`🚀 Application is ready for serverless deployment`)
       logger.log(`🔧 Environment: ${process.env.NODE_ENV || "development"}`)
       logger.log(`🌐 CORS: Enabled for employee-directory-frontend-two.vercel.app`)
-      logger.log(`📚 Swagger: Available at /api/v1/docs (JSON) and /api/v1/docs-ui (HTML)`)
+      logger.log(`📚 Swagger: Available at /api/docs (UI), /api/v1/docs (JSON), and /api/v1/docs-ui (HTML)`)
     } catch (error) {
       logger.error("Failed to start application:", error)
       throw error
