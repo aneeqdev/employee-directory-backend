@@ -61,7 +61,7 @@ async function bootstrap() {
             endpoints: {
               health: "/api/v1/health",
               employees: "/api/v1/employees",
-              swagger: "/api/docs"
+              swagger: "/api/v1/docs"
             },
             timestamp: new Date().toISOString()
           })
@@ -78,13 +78,61 @@ async function bootstrap() {
         .build()
 
       const document = SwaggerModule.createDocument(app, config)
-      SwaggerModule.setup("api/docs", app, document)
+      
+      // Serve Swagger JSON
+      app.use('/api/v1/docs', (req: any, res: any) => {
+        res.json(document)
+      })
+
+      // Serve Swagger UI HTML
+      app.use('/api/v1/docs-ui', (req: any, res: any) => {
+        const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Directory API Documentation</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
+    <style>
+        html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+        *, *:before, *:after { box-sizing: inherit; }
+        body { margin:0; background: #fafafa; }
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: '/api/v1/docs',
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout"
+            });
+        };
+    </script>
+</body>
+</html>`
+        res.setHeader('Content-Type', 'text/html')
+        res.send(html)
+      })
 
       await app.init()
 
       logger.log(`🚀 Application is ready for serverless deployment`)
       logger.log(`🔧 Environment: ${process.env.NODE_ENV || "development"}`)
       logger.log(`🌐 CORS: Enabled for employee-directory-frontend-two.vercel.app`)
+      logger.log(`📚 Swagger: Available at /api/v1/docs (JSON) and /api/v1/docs-ui (HTML)`)
     } catch (error) {
       logger.error("Failed to start application:", error)
       throw error
@@ -95,7 +143,7 @@ async function bootstrap() {
 
 export default async function handler(req: any, res: any) {
   // Set CORS headers for all requests
-  res.setHeader('Access-Control-Allow-Origin', 'https://employee-directory-frontend-two.vercel.app')
+  res.setHeader('Access-Control-Allow-Origin', 'https://employee-directory-backend.vercel.app')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
   res.setHeader('Access-Control-Allow-Credentials', 'true')
