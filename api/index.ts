@@ -17,31 +17,12 @@ async function bootstrap() {
         logger: ["error", "warn", "log", "debug", "verbose"],
       })
 
-      // Temporarily disable helmet for CORS debugging
-      // app.use(helmet())
-
-      // Aggressive CORS configuration - allow all origins temporarily
+      // Simple CORS configuration
       app.enableCors({
-        origin: true, // Allow all origins
+        origin: "https://employee-directory-frontend-two.vercel.app",
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Origin", "Accept"],
-        exposedHeaders: ["Content-Length", "Content-Type"],
-        preflightContinue: false,
-        optionsSuccessStatus: 204
-      })
-
-      // Add CORS middleware manually for additional debugging
-      app.use((req: any, res: any, next: any) => {
-        res.header('Access-Control-Allow-Origin', '*')
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Origin, Accept')
-        
-        if (req.method === 'OPTIONS') {
-          res.sendStatus(204)
-        } else {
-          next()
-        }
+        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
       })
 
       app.useGlobalPipes(
@@ -94,7 +75,7 @@ async function bootstrap() {
 
       logger.log(`🚀 Application is ready for serverless deployment`)
       logger.log(`🔧 Environment: ${process.env.NODE_ENV || "development"}`)
-      logger.log(`🌐 CORS: Enabled for all origins`)
+      logger.log(`🌐 CORS: Enabled for employee-directory-frontend-two.vercel.app`)
     } catch (error) {
       logger.error("Failed to start application:", error)
       throw error
@@ -104,18 +85,17 @@ async function bootstrap() {
 }
 
 export default async function handler(req: any, res: any) {
-  try {
-    // Add CORS headers at the handler level
-    res.setHeader('Access-Control-Allow-Origin', '*')
+  // Handle OPTIONS requests (preflight)
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', 'https://employee-directory-frontend-two.vercel.app')
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Origin, Accept')
-    
-    // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-      res.status(204).end()
-      return
-    }
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+    res.status(204).end()
+    return
+  }
 
+  try {
     const app = await bootstrap()
     const expressInstance = app.getHttpAdapter().getInstance()
     return expressInstance(req, res)
