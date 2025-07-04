@@ -38,9 +38,8 @@ async function bootstrap() {
   // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle("Employee Directory API")
-    .setDescription("API for managing employee directory with authentication")
+    .setDescription("API for managing employee directory")
     .setVersion("1.0")
-    .addBearerAuth()
     .build()
 
   const document = SwaggerModule.createDocument(app, config)

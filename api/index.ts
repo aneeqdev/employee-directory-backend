@@ -71,7 +71,6 @@ async function bootstrap() {
         .setVersion("1.0")
         .addTag("employees", "Employee management operations")
         .addTag("health", "Health check endpoints")
-        .addBearerAuth()
         .build()
 
       const document = SwaggerModule.createDocument(app, config)

@@ -1,25 +1,22 @@
 # Employee Directory Backend
 
-A comprehensive NestJS backend API for managing employee directory with authentication, authorization, and CRUD operations.
+A comprehensive NestJS backend API for managing employee directory with CRUD operations.
 
 ## Features
 
-- 🔐 JWT Authentication & Authorization
 - 👥 Employee Management (CRUD operations)
-- 👤 User Management
 - 📊 Pagination & Filtering
 - 🏥 Health Check Endpoints
 - 📚 Swagger API Documentation
 - 🛡️ Security (Helmet, CORS, Rate Limiting)
 - 🗄️ Database Migrations
-- 🌱 Database Seeding
 
 ## Tech Stack
 
 - **Framework**: NestJS
 - **Database**: SQLite (local) / PostgreSQL (Neon) (production)
 - **ORM**: TypeORM
-- **Authentication**: JWT with Passport
+
 - **Validation**: class-validator
 - **Documentation**: Swagger/OpenAPI
 - **Deployment**: Vercel
@@ -84,7 +81,6 @@ For production deployment, you need a cloud database. This application is config
    ```
    NODE_ENV=production
    DATABASE_URL=postgres://your-username:your-password@your-host/your-database?sslmode=require
-   JWT_SECRET=your-jwt-secret
    ALLOWED_ORIGINS=https://your-frontend-domain.vercel.app
    ```
 
@@ -105,26 +101,13 @@ export DATABASE_URL=postgres://your-username:your-password@your-host/your-databa
 npm run migration:run
 ```
 
-### 4. Migrate Data from SQLite to PostgreSQL (if needed)
 
-If you have existing data in your local SQLite database, you can migrate it to PostgreSQL:
-
-```bash
-# Set the production DATABASE_URL
-export DATABASE_URL=postgres://your-username:your-password@your-host/your-database?sslmode=require
-
-# Run the migration script
-npm run migrate:sqlite-to-postgres
-```
 
 ## API Endpoints
 
 ### Health Check
 - `GET /api/v1/health` - Full health check (includes database)
 - `GET /api/v1/health/basic` - Basic health check (no database required)
-
-### Authentication
-- `POST /api/v1/auth/login` - User login
 
 ### Employees
 - `GET /api/v1/employees` - Get all employees (with pagination)
@@ -142,7 +125,6 @@ npm run migrate:sqlite-to-postgres
 |----------|-------------|----------|---------|
 | `NODE_ENV` | Environment (development/production) | No | development |
 | `DATABASE_URL` | PostgreSQL database URL (production) | Yes (prod) | - |
-| `JWT_SECRET` | JWT signing secret | Yes | - |
 | `ALLOWED_ORIGINS` | CORS allowed origins | No | localhost:3000 |
 
 ## Database Configuration

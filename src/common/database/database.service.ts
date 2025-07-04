@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Employee } from '../../employees/entities/employee.entity';
-import { User } from '../../users/entities/user.entity';
 
 @Injectable()
 export class DatabaseService {
@@ -11,8 +10,6 @@ export class DatabaseService {
   constructor(
     @InjectRepository(Employee)
     private readonly employeeRepository: Repository<Employee>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
   ) {}
 
   async getEmployees(query: any = {}) {

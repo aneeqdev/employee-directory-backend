@@ -28,42 +28,26 @@ describe('AppController (e2e)', () => {
       });
   });
 
-  describe('/api/v1/auth/login (POST)', () => {
-    it('should return 401 for invalid credentials', () => {
-      return request(app.getHttpServer())
-        .post('/api/v1/auth/login')
-        .send({
-          email: 'invalid@example.com',
-          password: 'wrongpassword',
-        })
-        .expect(401);
-    });
+  it('/api/v1/health/basic (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/api/v1/health/basic')
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.status).toBe('ok');
+      });
   });
 
   describe('/api/v1/employees (GET)', () => {
-    it('should return 401 without authentication', () => {
+    it('should return employees list', () => {
       return request(app.getHttpServer())
         .get('/api/v1/employees')
-        .expect(401);
-    });
-  });
-
-  describe('/api/v1/employees (POST)', () => {
-    it('should return 401 without authentication', () => {
-      return request(app.getHttpServer())
-        .post('/api/v1/employees')
-        .send({
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@example.com',
-          phone: '1234567890',
-          title: 'Software Engineer',
-          department: 'Engineering',
-          location: 'New York',
-          hireDate: '2023-01-15',
-          salary: 75000,
-        })
-        .expect(401);
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('data');
+          expect(res.body).toHaveProperty('currentPage');
+          expect(res.body).toHaveProperty('totalPages');
+          expect(res.body).toHaveProperty('totalItems');
+        });
     });
   });
 }); 

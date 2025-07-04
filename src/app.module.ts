@@ -4,10 +4,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config"
 import { EmployeesModule } from "./employees/employees.module"
 import { HealthModule } from "./health/health.module"
 import { BasicHealthModule } from "./health/basic-health.module"
-import { AuthModule } from "./auth/auth.module"
-import { UsersModule } from "./users/users.module"
 import { Employee } from "./employees/entities/employee.entity"
-import { User } from "./users/entities/user.entity"
 import { getTypeOrmConfig } from "./config/typeorm.config"
 import { LoggerService } from "./common/logger/logger.service"
 import { ThrottlerModule } from '@nestjs/throttler'
@@ -33,8 +30,6 @@ import { ThrottlerModule } from '@nestjs/throttler'
     EmployeesModule,
     HealthModule,
     BasicHealthModule,
-    AuthModule,
-    UsersModule,
   ],
   providers: [LoggerService],
   exports: [LoggerService],

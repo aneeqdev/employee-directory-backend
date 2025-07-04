@@ -1,7 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Employee } from '../employees/entities/employee.entity';
-import { User } from '../users/entities/user.entity';
 
 // Determine database configuration based on environment
 const getDatabaseConfig = () => {
@@ -38,7 +37,7 @@ const getDatabaseConfig = () => {
 
 export const AppDataSource = new DataSource({
   ...getDatabaseConfig(),
-  entities: [Employee, User],
+  entities: [Employee],
   migrations: ['src/migrations/*.ts'],
   synchronize: process.env.NODE_ENV !== 'production', // Only in development
   logging: process.env.NODE_ENV === 'development',
@@ -54,7 +53,7 @@ export const getTypeOrmConfig = (configService: ConfigService): DataSourceOption
     
     const config = {
       ...getDatabaseConfig(),
-      entities: [Employee, User],
+      entities: [Employee],
       synchronize: configService.get('NODE_ENV') !== 'production', // Only in development
       logging: configService.get('NODE_ENV') === 'development',
     } as DataSourceOptions;
